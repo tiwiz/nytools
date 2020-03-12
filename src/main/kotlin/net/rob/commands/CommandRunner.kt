@@ -18,7 +18,7 @@ sealed class CommandResult {
 class CommandRunner {
 
     fun runCommand(command: Command, callback: (CommandResult) -> Unit = {}) {
-        if(command.longRunning) {
+        if (command.longRunning) {
             runLongRunningCommand(command, callback)
         } else {
             runNormalCommand(command, callback)
@@ -29,11 +29,13 @@ class CommandRunner {
             ProcBuilder(command.exec)
                     .withArgs(*command.params)
                     .withOutputConsumer {
-                        val reader = BufferedReader(InputStreamReader(it))
-                        callback(
-                                CommandResult.Success(reader.readLines())
-                        )
-                        reader.close()
+                        GlobalScope.launch(Dispatchers.Main) {
+                            val reader = BufferedReader(InputStreamReader(it))
+                            callback(
+                                    CommandResult.Success(reader.readLines())
+                            )
+                            reader.close()
+                        }.start()
                     }.apply {
                         if (command.longRunning) {
                             withNoTimeout()

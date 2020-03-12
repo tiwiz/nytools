@@ -1,8 +1,12 @@
 package net.rob.ui
 
+import javafx.beans.property.SimpleStringProperty
+import javafx.collections.FXCollections
 import javafx.geometry.Pos
+import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
 import net.rob.controllers.DeeplinkController
+import net.rob.controllers.DeviceController
 import net.rob.controllers.ToolbarController
 import net.rob.controllers.ToolsController
 import tornadofx.*
@@ -13,6 +17,7 @@ class MainView : View(title = "NYTools") {
 
     private val toolbar: ToolbarView by inject()
     private val deeplinkView: DeeplinkView by inject()
+    private val deviceView: DeviceView by inject()
 
     override val root = vbox {
 
@@ -20,6 +25,11 @@ class MainView : View(title = "NYTools") {
 
         paddingAll = 8.0
         spacing = 4.0
+
+        fieldset("Device select") {
+            addClass(Style.frame)
+            add(deviceView)
+        }
 
         fieldset("Quick tools") {
             addClass(Style.frame)
@@ -81,7 +91,7 @@ class ToolbarView : View() {
 
 class DeeplinkView : View() {
 
-    var deeplinkField: TextField by singleAssign()
+    private var deeplinkField: TextField by singleAssign()
 
     private val deeplinkController: DeeplinkController by inject()
 
@@ -116,5 +126,31 @@ class DeeplinkView : View() {
         }
 
 
+    }
+}
+
+class DeviceView : View() {
+
+    private val deviceController: DeviceController by inject()
+    private val selectedCity = SimpleStringProperty()
+
+    private var deviceComboBox: ComboBox<String> by singleAssign()
+
+    override val root = hbox {
+
+        combobox<String>(selectedCity) {
+            deviceComboBox = this
+        }
+
+        deviceController.fetchDevices { results ->
+            deviceComboBox.items = FXCollections.observableArrayList(results.map { "${it.serial} (${it.name})" })
+            deviceComboBox.selectionModel.selectFirst()
+        }
+    }
+
+    init {
+        selectedCity.onChange {
+            println("New string: $it")
+        }
     }
 }

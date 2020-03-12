@@ -33,10 +33,15 @@ object CommandFactory {
     private const val ACTION = "-a"
     private const val ACTION_VIEW = "android.intent.action.VIEW"
     private const val DEEPLINK = "-d"
+    private const val LONG = "-l"
+
+    private const val DEVICES = "devices"
 
     fun adbInstallCheck() = (Tools.ADB to arrayOf(HELP)).build()
 
     fun scrcpyInstallCheck() = (Tools.SCRCPY to arrayOf(HELP_SHORT)).build()
+
+    fun fetchDevices() = (Tools.ADB to arrayOf(DEVICES, LONG)).build()
 
     fun enableWifi() = (Tools.ADB to arrayOf(SHELL, SVC, WIFI, ENABLE)).build()
 
