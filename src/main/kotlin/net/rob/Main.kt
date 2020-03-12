@@ -1,12 +1,13 @@
 package net.rob
 
 import javafx.application.Application.launch
+import javafx.scene.image.Image
 import javafx.stage.Stage
 import net.rob.ui.MainView
 import net.rob.ui.Style
 import tornadofx.*
 
-class NYTools : App(MainView::class, Style::class) {
+class NYTools : App(Image("images/app_icon_one_color.png"), MainView::class, Style::class) {
     init {
         reloadStylesheetsOnFocus()
     }
