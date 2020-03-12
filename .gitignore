@@ -1,3 +1,4 @@
 /build/
 /.gradle/
-*/.DS_STORE
+
+.DS_STORE
