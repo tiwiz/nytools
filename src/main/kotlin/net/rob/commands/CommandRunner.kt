@@ -8,87 +8,78 @@ import org.buildobjects.process.ExternalProcessFailureException
 import org.buildobjects.process.ProcBuilder
 import org.buildobjects.process.StartupException
 import java.io.BufferedReader
+import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
 
 sealed class CommandResult {
     class Success(val results: List<String> = emptyList()) : CommandResult()
     class Failure(val error: String) : CommandResult()
+    object Loading : CommandResult()
 }
 
 class CommandRunner {
 
-    fun runCommand(command: Command, callback: (CommandResult) -> Unit = {}) {
-        if (command.longRunning) {
-            runLongRunningCommand(command, callback)
-        } else {
-            runNormalCommand(command, callback)
-        }
-    }
+    fun runCommand(command: Command, callback: (CommandResult) -> Unit = {}) =
+            if (command.longRunning) {
+                runLongRunningCommand(command, callback)
+                CommandResult.Loading
+            } else {
+                runNormalCommand(command)
+            }
 
-    private fun builder(command: Command, callback: (CommandResult) -> Unit) =
+    private fun builder(command: Command) =
             ProcBuilder(command.exec)
-                    .withArgs(*command.params)
-                    .withOutputConsumer {
-                        GlobalScope.launch(Dispatchers.Main) {
-                            val reader = BufferedReader(InputStreamReader(it))
-                            callback(
-                                    CommandResult.Success(reader.readLines())
-                            )
-                            reader.close()
-                        }.start()
-                    }.apply {
+                    .withArgs(*command.params).apply {
                         if (command.longRunning) {
                             withNoTimeout()
                         }
                     }
 
-    private fun runNormalCommand(command: Command, callback: (CommandResult) -> Unit = {}) {
-        try {
-            builder(command, callback).run()
-        } catch (e: ExternalProcessFailureException) {
-            callback(CommandResult.Failure(e.stderr))
-        } catch (e: StartupException) {
-            callback(CommandResult.Failure(e.message ?: "${command.exec} failure"))
-        }
-    }
+    private fun runNormalCommand(command: Command) =
+            try {
+                process(builder(command).run().outputBytes)
+            } catch (e: ExternalProcessFailureException) {
+                CommandResult.Failure(e.stderr)
+            } catch (e: StartupException) {
+                CommandResult.Failure(e.message ?: "${command.exec} failure")
+            }
+
+    private fun process(outputBytes: ByteArray): CommandResult.Success =
+            CommandResult.Success(
+                    with(BufferedReader(InputStreamReader(ByteArrayInputStream(outputBytes)))) {
+                        readLines()
+                    })
 
     private fun runLongRunningCommand(command: Command, callback: (CommandResult) -> Unit = {}) {
         GlobalScope.launch(Dispatchers.Default) {
             try {
-                builder(command, callback)
+                builder(command)
                         .withNoTimeout()
                         .run()
+                returnResultOnMainThreadCallback(callback, CommandResult.Success())
             } catch (e: ExternalProcessFailureException) {
-                withContext(Dispatchers.Main) {
-                    callback(CommandResult.Failure(e.stderr))
-                }
+                returnResultOnMainThreadCallback(callback, CommandResult.Failure(e.stderr))
             } catch (e: StartupException) {
-                withContext(Dispatchers.Main) {
-                    callback(CommandResult.Failure(e.message ?: "${command.exec} failure"))
-                }
+                returnResultOnMainThreadCallback(callback, CommandResult.Failure(e.message
+                        ?: "${command.exec} failure"))
             }
         }.start()
     }
 
+    private suspend fun returnResultOnMainThreadCallback(callback: (CommandResult) -> Unit, result: CommandResult) {
+        withContext(Dispatchers.Main) {
+            callback(result)
+        }
+    }
+
     fun runCommandWithErrorCallback(command: Command, onError: (String) -> Unit) {
-        runCommand(command) {
-            if (it is CommandResult.Failure) {
-                onError(it.error)
-            }
+        val result = runCommand(command)
+
+        if (result is CommandResult.Failure) {
+            onError(result.error)
         }
     }
 
-    fun runCommandsForFailures(commands: List<Command>, failureCallback: (List<Command>) -> Unit) {
-        val failureList = mutableListOf<Command>()
-
-        commands.forEach { command ->
-            runCommandWithErrorCallback(command) {
-                failureList.add(command)
-            }
-        }
-
-        if (failureList.size > 0) {
-            failureCallback(failureList)
-        }
-    }
+    fun runCommandsForFailures(commands: List<Command>) =
+            commands.filter { command -> runNormalCommand(command) is CommandResult.Failure }
 }

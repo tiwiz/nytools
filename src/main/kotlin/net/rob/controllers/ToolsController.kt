@@ -15,13 +15,14 @@ class ToolsController : Controller() {
             CommandFactory.scrcpyInstallCheck())
 
     fun checkTools() {
-        runner.runCommandsForFailures(supportedTools) {
-            if (it.size == supportedTools.size) {
-                warnUserNoToolsInstalledAndCloseApp()
-            } else {
-                warnUserSomeToolsAreMissing(it)
-            }
+        val failures = runner.runCommandsForFailures(supportedTools)
+
+        if (failures.size == supportedTools.size) {
+            warnUserNoToolsInstalledAndCloseApp()
+        } else if (failures.isNotEmpty()){
+            warnUserSomeToolsAreMissing(failures)
         }
+
     }
 
     private fun warnUserNoToolsInstalledAndCloseApp() {
