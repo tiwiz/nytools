@@ -1,0 +1,33 @@
+plugins {
+    id 'java'
+    id "org.jetbrains.kotlin.jvm" version "1.3.70"
+}
+
+group 'net.rob'
+version '1.0-SNAPSHOT'
+
+
+defaultTasks 'run'
+
+repositories {
+    mavenCentral()
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget= 1.8
+}
+
+sourceSets {
+    main.kotlin.srcDirs += 'src/main/myKotlin'
+    main.java.srcDirs += 'src/main/myJava'
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.3.4"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.3.4"
+    implementation "no.tornado:tornadofx:1.7.0"
+    implementation "org.buildobjects:jproc:2.2.3"
+
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
