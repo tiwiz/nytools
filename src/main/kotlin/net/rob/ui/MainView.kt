@@ -9,6 +9,7 @@ import net.rob.controllers.DeeplinkController
 import net.rob.controllers.DeviceController
 import net.rob.controllers.ToolbarController
 import net.rob.controllers.ToolsController
+import net.rob.viewmodels.DeviceViewModel
 import tornadofx.*
 
 class MainView : View(title = "NYTools") {
@@ -142,11 +143,13 @@ class DeviceView : View() {
             deviceComboBox = this
         }
 
-        deviceController.fetchDevices { results ->
-            deviceComboBox.items = FXCollections.observableArrayList(results.map { "${it.serial} (${it.name})" })
+        deviceController.fetchDevices {
+            deviceComboBox.items = DeviceViewModel.getDeviceListForUi().toObservableList()
             deviceComboBox.selectionModel.selectFirst()
         }
     }
+
+    private fun List<String>.toObservableList() = FXCollections.observableArrayList(this)
 
     init {
         selectedCity.onChange {

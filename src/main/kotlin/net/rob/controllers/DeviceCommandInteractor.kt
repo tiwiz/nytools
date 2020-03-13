@@ -13,7 +13,7 @@ sealed class DeviceResponse {
     data class Failure(val error: String) : DeviceResponse()
 }
 
-class DeviceCommandInteractor() {
+class DeviceCommandInteractor {
 
     private val runner = CommandRunner()
 
