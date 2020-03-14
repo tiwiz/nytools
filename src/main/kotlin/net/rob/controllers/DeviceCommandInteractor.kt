@@ -34,17 +34,30 @@ class DeviceCommandInteractor {
                     }
 
     private fun splitLineIntoModelAndSerial(line: String): DeviceData {
-        val (serial, model) = line.split(" ")
-                .mapIndexed { index, s -> if (index != 0 && !s.contains("model")) "" else s }
-                .filterNot { it.isBlank() }
+        val (serial, model) = fetchSerialAndModel(line)
 
         return DeviceData(serial, model.clean())
+    }
+
+    private fun fetchSerialAndModel(line: String): List<String> {
+        return if (line.contains(MODEL)) {
+            line.split(" ")
+                    .mapIndexed { index, s -> if (index != 0 && !s.contains(MODEL)) "" else s }
+                    .filterNot { it.isBlank() }
+        } else {
+            listOf(line.split(" ").first(), OFFLINE_MODEL)
+        }
     }
 
     private fun String.clean(): String {
         val (_, model) = split(":")
 
         return model.replace("_", " ")
+    }
+
+    companion object {
+        private const val MODEL = "model"
+        private const val OFFLINE_MODEL = "$MODEL:OFFLINE"
     }
 
 }

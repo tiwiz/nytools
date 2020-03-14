@@ -10,6 +10,7 @@ class Style : Stylesheet() {
         val flatButton by cssclass()
         val frame by cssclass()
         val flatTextField by cssclass()
+        val dropList by cssclass()
 
         const val LIGHTGRAY = "#e0e0e0"
         const val DARKBLUE = "#1976D2"
@@ -34,6 +35,14 @@ class Style : Stylesheet() {
                     right = Color.TRANSPARENT,
                     left = Color.TRANSPARENT,
                     bottom = c(DARKBLUE))
+
+            backgroundColor += Color.TRANSPARENT
+        }
+        dropList {
+            borderColor += box(top = Color.TRANSPARENT,
+                    right = Color.TRANSPARENT,
+                    left = Color.TRANSPARENT,
+                    bottom = c(LIGHTGRAY))
 
             backgroundColor += Color.TRANSPARENT
         }

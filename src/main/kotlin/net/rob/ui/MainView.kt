@@ -140,8 +140,11 @@ class DeviceView : View() {
 
     override val root = hbox {
 
+        setMinSize(400.0, 48.0)
+
         combobox<String>(selectedCity) {
             deviceComboBox = this
+            addClass(Style.dropList)
         }
 
         deviceController.fetchDevices {
