@@ -11,6 +11,9 @@ import net.rob.controllers.ToolbarController
 import net.rob.controllers.ToolsController
 import net.rob.viewmodels.DeviceViewModel.deviceListForUi
 import net.rob.viewmodels.DeviceViewModel.selectDevice
+import net.rob.viewmodels.UiEnabledStateViewModel.adbAvailable
+import net.rob.viewmodels.UiEnabledStateViewModel.scrcpyAvailable
+import net.rob.viewmodels.UiEnabledStateViewModel.updateConnectedDevicesList
 import tornadofx.*
 
 class MainView : View(title = "NYTools") {
@@ -57,6 +60,7 @@ class ToolbarView : View() {
         button(graphic = imageview("images/enable_wifi.png")) {
             tooltip("Enable Wifi")
             addClass(Style.flatButton)
+            enableWhen(adbAvailable)
         }.setOnAction {
             controller.enableWifi()
         }
@@ -64,6 +68,7 @@ class ToolbarView : View() {
         button(graphic = imageview("images/disable_wifi.png")) {
             tooltip("Disable Wifi")
             addClass(Style.flatButton)
+            enableWhen(adbAvailable)
         }.setOnAction {
             controller.disableWifi()
         }
@@ -71,6 +76,7 @@ class ToolbarView : View() {
         button(graphic = imageview("images/enable_data.png")) {
             tooltip("Enable Mobile Data")
             addClass(Style.flatButton)
+            enableWhen(adbAvailable)
         }.setOnAction {
             controller.enableData()
         }
@@ -78,6 +84,7 @@ class ToolbarView : View() {
         button(graphic = imageview("images/disable_data.png")) {
             tooltip("Disable Mobile Data")
             addClass(Style.flatButton)
+            enableWhen(adbAvailable)
         }.setOnAction {
             controller.disableData()
         }
@@ -85,6 +92,7 @@ class ToolbarView : View() {
         button(graphic = imageview("images/scrcpy.png")) {
             tooltip("Mirror device")
             addClass(Style.flatButton)
+            enableWhen(scrcpyAvailable)
         }.setOnAction {
             controller.runScrcpy()
         }
@@ -119,7 +127,7 @@ class DeeplinkView : View() {
             button(graphic = imageview("images/send.png")) {
                 tooltip("Send deeplink command to device")
                 addClass(Style.flatButton)
-
+                enableWhen(adbAvailable)
             }.setOnAction {
                 config.set("targetPackage" to pkg.value)
                 config.save()
@@ -189,6 +197,8 @@ class DeviceView : View() {
         deviceController.fetchDevices {
             deviceComboBox.items = deviceListForUi.toObservableList()
             deviceComboBox.selectionModel.selectFirst()
+
+            updateConnectedDevicesList(deviceListForUi)
 
             /**
              * Workaround for ComboBox behaviour that doesn't trigger the selection properly

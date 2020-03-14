@@ -2,6 +2,8 @@ package net.rob.controllers
 
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
+import net.rob.commands.DeviceCommandInteractor
+import net.rob.commands.DeviceResponse
 import net.rob.viewmodels.DeviceViewModel
 import tornadofx.*
 

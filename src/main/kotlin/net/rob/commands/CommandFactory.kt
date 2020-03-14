@@ -20,7 +20,7 @@ import net.rob.commands.Parameters.WIFI
 private typealias ShortCommand = Pair<Tools, Array<String>>
 
 class Command(
-        private val tools: Tools,
+        val tools: Tools,
         val params: Array<String> = emptyArray(),
         val longRunning: Boolean = false) {
 

@@ -1,10 +1,7 @@
-package net.rob.controllers
+package net.rob.commands
 
-import net.rob.commands.CommandFactory
-import net.rob.commands.CommandResult
-import net.rob.commands.CommandRunner
-import net.rob.controllers.DeviceResponse.Failure
-import net.rob.controllers.DeviceResponse.Success
+import net.rob.commands.DeviceResponse.Failure
+import net.rob.commands.DeviceResponse.Success
 
 data class DeviceData(val serial: String, val name: String)
 sealed class DeviceResponse {
@@ -57,7 +54,8 @@ class DeviceCommandInteractor {
 
     companion object {
         private const val MODEL = "model"
-        private const val OFFLINE_MODEL = "$MODEL:OFFLINE"
+        const val OFFLINE = "OFFLINE"
+        private const val OFFLINE_MODEL = "$MODEL:$OFFLINE"
     }
 
 }

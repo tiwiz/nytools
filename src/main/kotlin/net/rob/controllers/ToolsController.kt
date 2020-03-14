@@ -6,6 +6,7 @@ import javafx.scene.control.ButtonType
 import net.rob.commands.Command
 import net.rob.commands.CommandFactory
 import net.rob.commands.CommandRunner
+import net.rob.viewmodels.UiEnabledStateViewModel.updateUnavailableTools
 import tornadofx.*
 
 class ToolsController : Controller() {
@@ -16,6 +17,8 @@ class ToolsController : Controller() {
 
     fun checkTools() {
         val failures = runner.runCommandsForFailures(supportedTools)
+
+        updateUnavailableTools(failures)
 
         if (failures.size == supportedTools.size) {
             warnUserNoToolsInstalledAndCloseApp()

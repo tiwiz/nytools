@@ -1,6 +1,6 @@
 package net.rob.viewmodels
 
-import net.rob.controllers.DeviceData
+import net.rob.commands.DeviceData
 import kotlin.collections.set
 
 
