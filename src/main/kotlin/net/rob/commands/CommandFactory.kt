@@ -10,6 +10,7 @@ import net.rob.commands.Parameters.DISABLE
 import net.rob.commands.Parameters.ENABLE
 import net.rob.commands.Parameters.HELP
 import net.rob.commands.Parameters.HELP_SHORT
+import net.rob.commands.Parameters.INSTALL
 import net.rob.commands.Parameters.LONG
 import net.rob.commands.Parameters.SERIAL
 import net.rob.commands.Parameters.SHELL
@@ -55,6 +56,9 @@ object CommandFactory {
     fun sendDeeplink(serial: String, deeplinkUri: String, andPkg: String? = null) = (Tools.ADB to
             listOfNotNull(SERIAL, serial, SHELL, AM, START, ACTION, ACTION_VIEW, DEEPLINK, deeplinkUri, andPkg).toTypedArray()
             ).build()
+
+    fun installApk(serial: String, apkPath: String) =
+            Command(Tools.ADB to arrayOf(SERIAL, serial, INSTALL, apkPath), longRunning = true)
 }
 
 object Parameters {
@@ -77,4 +81,5 @@ object Parameters {
     const val SERIAL = "-s"
 
     const val DEVICES = "devices"
+    const val INSTALL = "install"
 }
