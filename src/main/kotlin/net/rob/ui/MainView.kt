@@ -10,6 +10,7 @@ import net.rob.controllers.DeviceController
 import net.rob.controllers.ToolbarController
 import net.rob.controllers.ToolsController
 import net.rob.viewmodels.DeviceViewModel
+import net.rob.viewmodels.DeviceViewModel.deviceListForUi
 import tornadofx.*
 
 class MainView : View(title = "NYTools") {
@@ -144,7 +145,7 @@ class DeviceView : View() {
         }
 
         deviceController.fetchDevices {
-            deviceComboBox.items = DeviceViewModel.getDeviceListForUi().toObservableList()
+            deviceComboBox.items = deviceListForUi.toObservableList()
             deviceComboBox.selectionModel.selectFirst()
         }
     }
@@ -152,8 +153,10 @@ class DeviceView : View() {
     private fun List<String>.toObservableList() = FXCollections.observableArrayList(this)
 
     init {
-        selectedCity.onChange {
-            println("New string: $it")
+        selectedCity.onChange {key ->
+            key?.let {
+                DeviceViewModel.selectDevice(it)
+            }
         }
     }
 }

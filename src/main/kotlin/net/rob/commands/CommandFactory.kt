@@ -34,6 +34,7 @@ object CommandFactory {
     private const val ACTION_VIEW = "android.intent.action.VIEW"
     private const val DEEPLINK = "-d"
     private const val LONG = "-l"
+    private const val SERIAL = "-s"
 
     private const val DEVICES = "devices"
 
@@ -43,16 +44,16 @@ object CommandFactory {
 
     fun fetchDevices() = (Tools.ADB to arrayOf(DEVICES, LONG)).build()
 
-    fun enableWifi() = (Tools.ADB to arrayOf(SHELL, SVC, WIFI, ENABLE)).build()
+    fun enableWifi(serial: String) = (Tools.ADB to arrayOf(SERIAL, serial, SHELL, SVC, WIFI, ENABLE)).build()
 
-    fun disableWifi() = (Tools.ADB to arrayOf(SHELL, SVC, WIFI, DISABLE)).build()
+    fun disableWifi(serial: String) = (Tools.ADB to arrayOf(SERIAL, serial, SHELL, SVC, WIFI, DISABLE)).build()
 
-    fun enableData() = (Tools.ADB to arrayOf(SHELL, SVC, DATA, ENABLE)).build()
+    fun enableData(serial: String) = (Tools.ADB to arrayOf(SERIAL, serial, SHELL, SVC, DATA, ENABLE)).build()
 
-    fun disableData() = (Tools.ADB to arrayOf(SHELL, SVC, DATA, DISABLE)).build()
+    fun disableData(serial: String) = (Tools.ADB to arrayOf(SERIAL, serial, SHELL, SVC, DATA, DISABLE)).build()
 
-    fun runScrcpy() = Command(Tools.SCRCPY to emptyArray(), longRunning = true)
+    fun runScrcpy(serial: String) = Command(Tools.SCRCPY to arrayOf(SERIAL, serial), longRunning = true)
 
-    fun sendDeeplink(deeplinkUri: String) = (Tools.ADB to arrayOf(SHELL, AM, START, ACTION,
+    fun sendDeeplink(serial: String, deeplinkUri: String) = (Tools.ADB to arrayOf(SERIAL, serial, SHELL, AM, START, ACTION,
             ACTION_VIEW, DEEPLINK, deeplinkUri)).build()
 }

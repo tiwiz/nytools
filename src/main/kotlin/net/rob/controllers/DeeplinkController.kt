@@ -3,7 +3,10 @@ package net.rob.controllers
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
 import net.rob.commands.CommandFactory
+import net.rob.commands.CommandFactory.sendDeeplink
 import net.rob.commands.CommandRunner
+import net.rob.viewmodels.DeviceViewModel
+import net.rob.viewmodels.DeviceViewModel.selectedSerial
 import tornadofx.*
 
 class DeeplinkController : Controller() {
@@ -12,7 +15,7 @@ class DeeplinkController : Controller() {
 
     fun sendDeeplinkToDevice(deeplinkUri: String) {
         if (deeplinkUri.isNotBlank()) {
-            runner.runCommandWithErrorCallback(CommandFactory.sendDeeplink(deeplinkUri)) {
+            runner.runCommandWithErrorCallback(sendDeeplink(selectedSerial, deeplinkUri)) {
                 showError(it)
             }
         } else {

@@ -2,8 +2,13 @@ package net.rob.controllers
 
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonType
-import net.rob.commands.CommandFactory
+import net.rob.commands.CommandFactory.disableData
+import net.rob.commands.CommandFactory.disableWifi
+import net.rob.commands.CommandFactory.enableData
+import net.rob.commands.CommandFactory.enableWifi
+import net.rob.commands.CommandFactory.runScrcpy
 import net.rob.commands.CommandRunner
+import net.rob.viewmodels.DeviceViewModel.selectedSerial
 import tornadofx.*
 
 class ToolbarController : Controller() {
@@ -11,31 +16,31 @@ class ToolbarController : Controller() {
     private val runner = CommandRunner()
 
     fun enableWifi() {
-        runner.runCommandWithErrorCallback(CommandFactory.enableWifi()) {
+        runner.runCommandWithErrorCallback(enableWifi(selectedSerial)) {
             showError(it)
         }
     }
 
     fun disableWifi() {
-        runner.runCommandWithErrorCallback(CommandFactory.disableWifi()) {
+        runner.runCommandWithErrorCallback(disableWifi(selectedSerial)) {
             showError(it)
         }
     }
 
     fun enableData() {
-        runner.runCommandWithErrorCallback(CommandFactory.enableData()) {
+        runner.runCommandWithErrorCallback(enableData(selectedSerial)) {
             showError(it)
         }
     }
 
     fun disableData() {
-        runner.runCommandWithErrorCallback(CommandFactory.disableData()) {
+        runner.runCommandWithErrorCallback(disableData(selectedSerial)) {
             showError(it)
         }
     }
 
     fun runScrcpy() {
-        runner.runCommandWithErrorCallback(CommandFactory.runScrcpy()) {
+        runner.runCommandWithErrorCallback(runScrcpy(selectedSerial)) {
             showError(it)
         }
     }
