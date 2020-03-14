@@ -2,3 +2,4 @@
 /.gradle/
 
 .DS_STORE
+/conf/net.rob.ui.DeeplinkView.properties

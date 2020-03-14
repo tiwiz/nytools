@@ -9,7 +9,6 @@ import net.rob.controllers.DeeplinkController
 import net.rob.controllers.DeviceController
 import net.rob.controllers.ToolbarController
 import net.rob.controllers.ToolsController
-import net.rob.viewmodels.DeviceViewModel
 import net.rob.viewmodels.DeviceViewModel.deviceListForUi
 import net.rob.viewmodels.DeviceViewModel.selectDevice
 import tornadofx.*
@@ -99,7 +98,7 @@ class DeeplinkView : View() {
 
     private val deeplinkController: DeeplinkController by inject()
 
-    private val pkg = SimpleStringProperty(this, "pkgValue", config.string("target_package"))
+    private val pkg = SimpleStringProperty(this, "targetPackage", config.string("targetPackage"))
 
     override val root = vbox {
         hbox {
@@ -122,7 +121,7 @@ class DeeplinkView : View() {
                 addClass(Style.flatButton)
 
             }.setOnAction {
-                config.set("target_package" to pkg.value)
+                config.set("targetPackage" to pkg.value)
                 config.save()
                 deeplinkController.sendDeeplinkToDevice(deeplinkField.text, pkg.value)
             }
@@ -163,8 +162,30 @@ class DeviceView : View() {
         combobox<String>(selectedCity) {
             deviceComboBox = this
             addClass(Style.dropList)
+
+            setMinSize(200.0, 48.0)
         }
 
+        button(graphic = imageview("images/refresh.png")) {
+            tooltip("Reload devices list")
+            addClass(Style.flatButton)
+        }.setOnAction {
+            loadDevices()
+        }
+    }
+
+    init {
+
+        loadDevices()
+
+        selectedCity.onChange { key ->
+            key?.let {
+                selectDevice(it)
+            }
+        }
+    }
+
+    private fun loadDevices() {
         deviceController.fetchDevices {
             deviceComboBox.items = deviceListForUi.toObservableList()
             deviceComboBox.selectionModel.selectFirst()
@@ -173,17 +194,11 @@ class DeviceView : View() {
              * Workaround for ComboBox behaviour that doesn't trigger the selection properly
              * when only one item is present
              */
-            selectDevice(deviceListForUi.first())
+            if (deviceListForUi.isNotEmpty()) {
+                selectDevice(deviceListForUi.first())
+            }
         }
     }
 
     private fun List<String>.toObservableList() = FXCollections.observableArrayList(this)
-
-    init {
-        selectedCity.onChange { key ->
-            key?.let {
-                selectDevice(it)
-            }
-        }
-    }
 }
