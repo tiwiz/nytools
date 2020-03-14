@@ -5,10 +5,7 @@ import javafx.collections.FXCollections
 import javafx.geometry.Pos
 import javafx.scene.control.ComboBox
 import javafx.scene.control.TextField
-import net.rob.controllers.DeeplinkController
-import net.rob.controllers.DeviceController
-import net.rob.controllers.ToolbarController
-import net.rob.controllers.ToolsController
+import net.rob.controllers.*
 import net.rob.viewmodels.DeviceViewModel.deviceListForUi
 import net.rob.viewmodels.DeviceViewModel.selectDevice
 import net.rob.viewmodels.UiEnabledStateViewModel.adbAvailable
@@ -17,6 +14,21 @@ import net.rob.viewmodels.UiEnabledStateViewModel.updateConnectedDevicesList
 import tornadofx.*
 
 class MainView : View(title = "NYTools") {
+
+
+    private val leftPane: LeftPane by inject()
+    private val rightPane: RightPane by inject()
+
+    override val root = hbox {
+
+        add(leftPane)
+
+        add(rightPane)
+
+    }
+}
+
+class LeftPane : View() {
 
     private val toolsController: ToolsController by inject()
 
@@ -108,51 +120,52 @@ class DeeplinkView : View() {
 
     private val pkg = SimpleStringProperty(this, "targetPackage", config.string("targetPackage"))
 
-    override val root = vbox {
-        hbox {
+    override val root =
+            vbox {
+                hbox {
 
-            alignment = Pos.CENTER_LEFT
+                    alignment = Pos.CENTER_LEFT
 
-            textfield {
+                    textfield {
 
-                setMinSize(300.0, 48.0)
+                        setMinSize(300.0, 48.0)
 
-                deeplinkField = this
+                        deeplinkField = this
 
-                promptText = "Insert URL or URI"
+                        promptText = "Insert URL or URI"
 
-                addClass(Style.flatTextField)
+                        addClass(Style.flatTextField)
+                    }
+
+                    button(graphic = imageview("images/send.png")) {
+                        tooltip("Send deeplink command to device")
+                        addClass(Style.flatButton)
+                        enableWhen(adbAvailable)
+                    }.setOnAction {
+                        config.set("targetPackage" to pkg.value)
+                        config.save()
+                        deeplinkController.sendDeeplinkToDevice(deeplinkField.text, pkg.value)
+                    }
+
+                    button(graphic = imageview("images/delete.png")) {
+                        tooltip("Clear deeplink field")
+                        addClass(Style.flatButton)
+                    }.setOnAction {
+                        deeplinkField.clear()
+                    }
+                }
+
+                textfield(pkg) {
+
+                    setMinSize(300.0, 48.0)
+
+                    promptText = "Target package or leave empty for broadcast"
+
+                    addClass(Style.flatTextField)
+
+                    packageField = this
+                }
             }
-
-            button(graphic = imageview("images/send.png")) {
-                tooltip("Send deeplink command to device")
-                addClass(Style.flatButton)
-                enableWhen(adbAvailable)
-            }.setOnAction {
-                config.set("targetPackage" to pkg.value)
-                config.save()
-                deeplinkController.sendDeeplinkToDevice(deeplinkField.text, pkg.value)
-            }
-
-            button(graphic = imageview("images/delete.png")) {
-                tooltip("Clear deeplink field")
-                addClass(Style.flatButton)
-            }.setOnAction {
-                deeplinkField.clear()
-            }
-        }
-
-        textfield(pkg) {
-
-            setMinSize(300.0, 48.0)
-
-            promptText = "Target package or leave empty for broadcast"
-
-            addClass(Style.flatTextField)
-
-            packageField = this
-        }
-    }
 }
 
 
@@ -211,4 +224,40 @@ class DeviceView : View() {
     }
 
     private fun List<String>.toObservableList() = FXCollections.observableArrayList(this)
+}
+
+class RightPane : View() {
+
+    private val dragAndDropController: DragAndDropController by inject()
+
+    override val root = vbox {
+
+        enableWhen(adbAvailable)
+
+        paddingAll = 8.0
+        spacing = 4.0
+
+        dragAndDropController.bindTo(this)
+
+        fieldset("Install APK") {
+            addClass(Style.frame)
+
+            vbox {
+
+                setMinSize(300.0, 254.0)
+
+                alignment = Pos.CENTER
+
+                label("Drop or paste an APK to install\nit on the selected device") {
+                    alignment = Pos.CENTER
+                }
+            }
+        }
+
+        setOnDragOver { dragAndDropController.onDragOver(it) }
+
+        setOnDragDropped {
+            dragAndDropController.onDragDropped(it)
+        }
+    }
 }

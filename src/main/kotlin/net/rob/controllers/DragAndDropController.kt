@@ -1,9 +1,10 @@
 package net.rob.controllers
 
-import javafx.scene.Node
 import javafx.scene.input.DragEvent
 import javafx.scene.input.TransferMode
+import javafx.scene.layout.VBox
 import net.rob.commands.CommandFactory.installApk
+import net.rob.commands.CommandResult
 import net.rob.commands.CommandRunner
 import net.rob.viewmodels.DeviceViewModel.selectedSerial
 import tornadofx.*
@@ -13,10 +14,10 @@ class DragAndDropController : Controller() {
 
     private val runner = CommandRunner()
 
-    private lateinit var target: Node
+    private lateinit var target: VBox
 
-    fun bindTo(node: Node) {
-        target = node
+    fun bindTo(vbox: VBox) {
+        target = vbox
     }
 
     fun onDragOver(event: DragEvent) {
@@ -41,7 +42,14 @@ class DragAndDropController : Controller() {
 
     private fun checkAndInstallAPKs(files: List<File>) {
         files.filter { it.name.endsWith(".apk") }
-                .map { it.absolutePath }
-                .forEach { path -> installApk(selectedSerial, path) }
+                .forEach { file -> runner.runCommand(
+                        installApk(selectedSerial, file.absolutePath)
+                ) {
+                    onInstallResult(it, file)
+                }}
+    }
+
+    private fun onInstallResult(result: CommandResult, file: File) {
+
     }
 }
