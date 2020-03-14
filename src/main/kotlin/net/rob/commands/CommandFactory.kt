@@ -1,5 +1,22 @@
 package net.rob.commands
 
+import net.rob.commands.Parameters.ACTION
+import net.rob.commands.Parameters.ACTION_VIEW
+import net.rob.commands.Parameters.AM
+import net.rob.commands.Parameters.DATA
+import net.rob.commands.Parameters.DEEPLINK
+import net.rob.commands.Parameters.DEVICES
+import net.rob.commands.Parameters.DISABLE
+import net.rob.commands.Parameters.ENABLE
+import net.rob.commands.Parameters.HELP
+import net.rob.commands.Parameters.HELP_SHORT
+import net.rob.commands.Parameters.LONG
+import net.rob.commands.Parameters.SERIAL
+import net.rob.commands.Parameters.SHELL
+import net.rob.commands.Parameters.START
+import net.rob.commands.Parameters.SVC
+import net.rob.commands.Parameters.WIFI
+
 private typealias ShortCommand = Pair<Tools, Array<String>>
 
 class Command(
@@ -19,25 +36,6 @@ private fun ShortCommand.build() = Command(this)
 
 object CommandFactory {
 
-    private const val HELP = "help"
-    private const val HELP_SHORT = "-h"
-    private const val SHELL = "shell"
-    private const val SVC = "svc"
-    private const val WIFI = "wifi"
-    private const val DATA = "data"
-    private const val ENABLE = "enable"
-    private const val DISABLE = "disable"
-
-    private const val AM = "am"
-    private const val START = "start"
-    private const val ACTION = "-a"
-    private const val ACTION_VIEW = "android.intent.action.VIEW"
-    private const val DEEPLINK = "-d"
-    private const val LONG = "-l"
-    private const val SERIAL = "-s"
-
-    private const val DEVICES = "devices"
-
     fun adbInstallCheck() = (Tools.ADB to arrayOf(HELP)).build()
 
     fun scrcpyInstallCheck() = (Tools.SCRCPY to arrayOf(HELP_SHORT)).build()
@@ -54,6 +52,29 @@ object CommandFactory {
 
     fun runScrcpy(serial: String) = Command(Tools.SCRCPY to arrayOf(SERIAL, serial), longRunning = true)
 
-    fun sendDeeplink(serial: String, deeplinkUri: String) = (Tools.ADB to arrayOf(SERIAL, serial, SHELL, AM, START, ACTION,
-            ACTION_VIEW, DEEPLINK, deeplinkUri)).build()
+    fun sendDeeplink(serial: String, deeplinkUri: String, andPkg: String? = null) = (Tools.ADB to
+            listOfNotNull(SERIAL, serial, SHELL, AM, START, ACTION, ACTION_VIEW, DEEPLINK, deeplinkUri, andPkg).toTypedArray()
+            ).build()
+}
+
+object Parameters {
+
+    const val HELP = "help"
+    const val HELP_SHORT = "-h"
+    const val SHELL = "shell"
+    const val SVC = "svc"
+    const val WIFI = "wifi"
+    const val DATA = "data"
+    const val ENABLE = "enable"
+    const val DISABLE = "disable"
+
+    const val AM = "am"
+    const val START = "start"
+    const val ACTION = "-a"
+    const val ACTION_VIEW = "android.intent.action.VIEW"
+    const val DEEPLINK = "-d"
+    const val LONG = "-l"
+    const val SERIAL = "-s"
+
+    const val DEVICES = "devices"
 }
