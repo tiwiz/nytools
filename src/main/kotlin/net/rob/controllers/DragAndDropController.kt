@@ -5,7 +5,10 @@ import javafx.scene.input.TransferMode
 import javafx.scene.layout.VBox
 import net.rob.commands.CommandFactory.installApk
 import net.rob.commands.CommandResult
+import net.rob.commands.CommandResult.Failure
+import net.rob.commands.CommandResult.Success
 import net.rob.commands.CommandRunner
+import net.rob.ui.Toast
 import net.rob.viewmodels.DeviceViewModel.selectedSerial
 import tornadofx.*
 import java.io.File
@@ -50,6 +53,12 @@ class DragAndDropController : Controller() {
     }
 
     private fun onInstallResult(result: CommandResult, file: File) {
+        val message = if(result is Success) {
+            "${file.name} was installed successfully"
+        } else {
+            "${file.name} was not installed: ${(result as Failure).error}"
+        }
 
+        Toast.makeText(primaryStage, message)
     }
 }
