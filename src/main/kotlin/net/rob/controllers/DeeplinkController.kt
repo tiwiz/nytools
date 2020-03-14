@@ -13,9 +13,9 @@ class DeeplinkController : Controller() {
 
     private val runner = CommandRunner()
 
-    fun sendDeeplinkToDevice(deeplinkUri: String) {
+    fun sendDeeplinkToDevice(deeplinkUri: String, pkgValue: String?) {
         if (deeplinkUri.isNotBlank()) {
-            runner.runCommandWithErrorCallback(sendDeeplink(selectedSerial, deeplinkUri)) {
+            runner.runCommandWithErrorCallback(sendDeeplink(selectedSerial, deeplinkUri, pkgValue)) {
                 showError(it)
             }
         } else {

@@ -11,6 +11,7 @@ import net.rob.controllers.ToolbarController
 import net.rob.controllers.ToolsController
 import net.rob.viewmodels.DeviceViewModel
 import net.rob.viewmodels.DeviceViewModel.deviceListForUi
+import net.rob.viewmodels.DeviceViewModel.selectDevice
 import tornadofx.*
 
 class MainView : View(title = "NYTools") {
@@ -94,42 +95,59 @@ class ToolbarView : View() {
 class DeeplinkView : View() {
 
     private var deeplinkField: TextField by singleAssign()
+    private var packageField: TextField by singleAssign()
 
     private val deeplinkController: DeeplinkController by inject()
 
-    override val root = hbox {
+    private val pkg = SimpleStringProperty(this, "pkgValue", config.string("target_package"))
 
-        alignment = Pos.CENTER
+    override val root = vbox {
+        hbox {
 
-        textfield {
+            alignment = Pos.CENTER_LEFT
+
+            textfield {
+
+                setMinSize(300.0, 48.0)
+
+                deeplinkField = this
+
+                promptText = "Insert URL or URI"
+
+                addClass(Style.flatTextField)
+            }
+
+            button(graphic = imageview("images/send.png")) {
+                tooltip("Send deeplink command to device")
+                addClass(Style.flatButton)
+
+            }.setOnAction {
+                config.set("target_package" to pkg.value)
+                config.save()
+                deeplinkController.sendDeeplinkToDevice(deeplinkField.text, pkg.value)
+            }
+
+            button(graphic = imageview("images/delete.png")) {
+                tooltip("Clear deeplink field")
+                addClass(Style.flatButton)
+            }.setOnAction {
+                deeplinkField.clear()
+            }
+        }
+
+        textfield(pkg) {
 
             setMinSize(300.0, 48.0)
 
-            deeplinkField = this
-
-            promptText = "Insert URL or URI"
+            promptText = "Target package or leave empty for broadcast"
 
             addClass(Style.flatTextField)
+
+            packageField = this
         }
-
-        button(graphic = imageview("images/send.png")) {
-            tooltip("Send deeplink command to device")
-            addClass(Style.flatButton)
-
-        }.setOnAction {
-            deeplinkController.sendDeeplinkToDevice(deeplinkField.text)
-        }
-
-        button(graphic = imageview("images/delete.png")) {
-            tooltip("Clear deeplink field")
-            addClass(Style.flatButton)
-        }.setOnAction {
-            deeplinkField.clear()
-        }
-
-
     }
 }
+
 
 class DeviceView : View() {
 
@@ -150,15 +168,21 @@ class DeviceView : View() {
         deviceController.fetchDevices {
             deviceComboBox.items = deviceListForUi.toObservableList()
             deviceComboBox.selectionModel.selectFirst()
+
+            /**
+             * Workaround for ComboBox behaviour that doesn't trigger the selection properly
+             * when only one item is present
+             */
+            selectDevice(deviceListForUi.first())
         }
     }
 
     private fun List<String>.toObservableList() = FXCollections.observableArrayList(this)
 
     init {
-        selectedCity.onChange {key ->
+        selectedCity.onChange { key ->
             key?.let {
-                DeviceViewModel.selectDevice(it)
+                selectDevice(it)
             }
         }
     }
