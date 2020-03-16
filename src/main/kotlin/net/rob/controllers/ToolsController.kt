@@ -14,7 +14,7 @@ class ToolsController : Controller() {
     private val supportedTools = listOf(Tools.ADB, Tools.SCRCPY)
 
     fun checkTools() {
-        val tools = runner.findTools(supportedTools)
+        val tools = runner.findTools()
 
         updateUnavailableTools(tools)
 

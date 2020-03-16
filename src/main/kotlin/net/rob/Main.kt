@@ -8,6 +8,7 @@ import net.rob.ui.Style
 import net.rob.viewmodels.DeviceViewModel
 import net.rob.viewmodels.AppStateViewModel
 import tornadofx.*
+import java.io.File
 
 class NYTools : App(Image("images/app_icon_one_color.png"), MainView::class, Style::class) {
     init {

@@ -11,6 +11,7 @@ import org.buildobjects.process.StartupException
 import tornadofx.*
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
+import java.io.File
 import java.io.InputStreamReader
 
 sealed class CommandResult {
@@ -21,8 +22,13 @@ sealed class CommandResult {
 
 class CommandRunner {
 
-    fun findTools(tools: List<Tools>) : Map<Tools, String> =
-            tools.map { it to ProcBuilder.run("which", it.path).trim() }.toMap()
+    fun findTools(): Map<Tools, String> {
+        val lines = File(CONFIG_FILE).useLines { it.toList() }
+        return lines.map {
+            val (tool, path) = it.split("=")
+            Tools.from(tool) to path
+        }.toMap()
+    }
 
     fun runCommand(command: Command, callback: (CommandResult) -> Unit = {}) =
             if (command.longRunning) {
@@ -83,5 +89,9 @@ class CommandRunner {
         if (result is CommandResult.Failure) {
             onError(result.error)
         }
+    }
+
+    companion object {
+        private const val CONFIG_FILE = "nytools.config"
     }
 }
