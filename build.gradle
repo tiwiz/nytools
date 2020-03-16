@@ -1,34 +1,21 @@
-
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'no.tornado:fxlauncher-gradle-plugin:1.0.21'
-        classpath 'javax.xml.bind:jaxb-api:2.3.1'
-        classpath 'com.sun.xml.bind:jaxb-core:2.3.0.1'
-        classpath 'com.sun.xml.bind:jaxb-impl:2.3.1'
-    }
-}
-
 plugins {
     id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'java'
     id "org.jetbrains.kotlin.jvm" version "1.3.70"
-    id 'org.openjfx.javafxplugin' version '0.0.7'
 }
 
-apply plugin: 'no.tornado.fxlauncher'
+apply plugin: 'application'
 
 group 'net.rob'
 version '1.0-SNAPSHOT'
-
 
 defaultTasks 'run'
 
 repositories {
     mavenCentral()
 }
+
+mainClassName = "net.rob.MainKt"
 
 compileKotlin {
     kotlinOptions.jvmTarget= 1.8
@@ -42,13 +29,6 @@ sourceSets {
 sourceCompatibility = JavaVersion.VERSION_1_8
 targetCompatibility = JavaVersion.VERSION_1_8
 
-fxlauncher {
-    applicationVendor 'Rob'
-    // Base URL where you will host the application artifacts
-    applicationUrl 'http://fxldemo.tornado.no/'
-    applicationMainClass 'net.rob.MainKt'
-    acceptDowngrade false
-}
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
@@ -60,3 +40,5 @@ dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.12'
     testImplementation 'com.willowtreeapps.assertk:assertk-jvm:0.22'
 }
+
+
