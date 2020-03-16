@@ -4,11 +4,9 @@ import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleListProperty
 import javafx.collections.FXCollections.observableArrayList
-import net.rob.commands.Command
 import net.rob.commands.DeviceCommandInteractor.Companion.OFFLINE
 import net.rob.commands.Tools
 import net.rob.utils.emptyValues
-import net.rob.utils.notEmptyValues
 import tornadofx.*
 
 object AppStateViewModel {
