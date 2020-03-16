@@ -37,10 +37,6 @@ private fun ShortCommand.build() = Command(this)
 
 object CommandFactory {
 
-    fun adbInstallCheck() = (Tools.ADB to arrayOf(HELP)).build()
-
-    fun scrcpyInstallCheck() = (Tools.SCRCPY to arrayOf(HELP_SHORT)).build()
-
     fun fetchDevices() = (Tools.ADB to arrayOf(DEVICES, LONG)).build()
 
     fun enableWifi(serial: String) = (Tools.ADB to arrayOf(SERIAL, serial, SHELL, SVC, WIFI, ENABLE)).build()

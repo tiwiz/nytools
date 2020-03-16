@@ -8,9 +8,9 @@ import javafx.scene.control.TextField
 import net.rob.controllers.*
 import net.rob.viewmodels.DeviceViewModel.deviceListForUi
 import net.rob.viewmodels.DeviceViewModel.selectDevice
-import net.rob.viewmodels.UiEnabledStateViewModel.adbAvailable
-import net.rob.viewmodels.UiEnabledStateViewModel.scrcpyAvailable
-import net.rob.viewmodels.UiEnabledStateViewModel.updateConnectedDevicesList
+import net.rob.viewmodels.AppStateViewModel.adbAvailable
+import net.rob.viewmodels.AppStateViewModel.scrcpyAvailable
+import net.rob.viewmodels.AppStateViewModel.updateConnectedDevicesList
 import tornadofx.*
 
 class MainView : View(title = "NYTools") {

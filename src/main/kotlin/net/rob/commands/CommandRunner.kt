@@ -4,9 +4,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import net.rob.viewmodels.AppStateViewModel.pathFor
 import org.buildobjects.process.ExternalProcessFailureException
 import org.buildobjects.process.ProcBuilder
 import org.buildobjects.process.StartupException
+import tornadofx.*
 import java.io.BufferedReader
 import java.io.ByteArrayInputStream
 import java.io.InputStreamReader
@@ -19,6 +21,9 @@ sealed class CommandResult {
 
 class CommandRunner {
 
+    fun findTools(tools: List<Tools>) : Map<Tools, String> =
+            tools.map { it to ProcBuilder.run("which", it.path).trim() }.toMap()
+
     fun runCommand(command: Command, callback: (CommandResult) -> Unit = {}) =
             if (command.longRunning) {
                 runLongRunningCommand(command, callback)
@@ -28,7 +33,7 @@ class CommandRunner {
             }
 
     private fun builder(command: Command) =
-            ProcBuilder(command.exec)
+            ProcBuilder(pathFor(command.tools))
                     .withArgs(*command.params).apply {
                         if (command.longRunning) {
                             withNoTimeout()
@@ -79,7 +84,4 @@ class CommandRunner {
             onError(result.error)
         }
     }
-
-    fun runCommandsForFailures(commands: List<Command>) =
-            commands.filter { command -> runNormalCommand(command) is CommandResult.Failure }
 }

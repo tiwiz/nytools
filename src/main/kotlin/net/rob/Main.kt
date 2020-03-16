@@ -6,7 +6,7 @@ import javafx.stage.Stage
 import net.rob.ui.MainView
 import net.rob.ui.Style
 import net.rob.viewmodels.DeviceViewModel
-import net.rob.viewmodels.UiEnabledStateViewModel
+import net.rob.viewmodels.AppStateViewModel
 import tornadofx.*
 
 class NYTools : App(Image("images/app_icon_one_color.png"), MainView::class, Style::class) {
@@ -21,7 +21,7 @@ class NYTools : App(Image("images/app_icon_one_color.png"), MainView::class, Sty
 
     override fun stop() {
         DeviceViewModel.clear()
-        UiEnabledStateViewModel.clear()
+        AppStateViewModel.clear()
         super.stop()
     }
 }
